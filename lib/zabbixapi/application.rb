@@ -1,50 +1,37 @@
-module Zabbix
-  class ZabbixApi
-    def add_application(app_options)
+class ZabbixApi
+  class Application
 
-      app_options_default = {
-        'hostid' => nil,
-        'name' => nil
-      }
-
-      application = merge_opt(app_options_default, app_options)
-      message = {
-        'method' => 'application.create',
-        'params' => application
-      }
-
-      responce = send_request(message)
-
-      unless responce.empty? then
-        result = responce['applicationids'][0].to_i
-      else
-        result = nil
-      end 
-
-      return result
+    def initialize(options = {})
+      @client = Client.new(options)
+      @options = options
     end
+
+    def create(data)
+      result = @client.api_request(:method => "application.create", :params => [data])
+      result.empty? ? nil : result['applicationids'][0].to_i
+    end
+
+    def add(data)
+      create(data)
+    end
+
+    def delete(data)
+      result = @client.api_request(:method => "application.delete", :params => [data])
+      result.empty? ? nil : result['applicationids'][0].to_i
+    end
+
+    def destroy(data)
+      delete(data)
+    end
+
+    def get_full_data(data)
+      @client.api_request(:method => "application.get", :params => {:filter => data, :output => "extend"})
+    end
+
+    def get_id(data)
+      result = get_full_data(data)
+      result.empty? ? nil : result[0]['applicationid'].to_i
+    end
+
   end
-
-  def get_app_id(host_id, app_name)
-
-    message = {
-      'method' => 'application.get',
-      'params' => {
-        'filter' => {
-          'name' => app_name,
-          'hostid' => host_id
-        }
-      }
-    }
-
-    responce = send_request(message)
-
-    unless responce.empty? then
-      result = responce[0]['applicationid']
-    else
-      result = nil 
-    end 
-
-    return result
-  end 
 end

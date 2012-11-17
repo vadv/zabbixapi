@@ -1,20 +1,20 @@
 # -*- encoding: utf-8 -*-
+$:.push File.expand_path("../lib", __FILE__)
+require "zabbixapi/version"
 
-require 'rake'
+Gem::Specification.new do |s|
+  s.name        = "zabbixapi"
+  s.version     = ZabbixApi::VERSION
+  s.authors     = ["Vasiliev D.V."]
+  s.email       = ["vadv.mkn@gmail.com"]
+  s.homepage    = "https://github.com/vadv/zabbixapi"
+  s.summary     = %q{Realization for Zabbix API.}
+  s.description = %q{Allows you to work with zabbix api from ruby.}
 
-Gem::Specification.new do |spec|
+  s.rubyforge_project = "zabbixapi"
 
-  spec.version = '0.1.5a3'
-  spec.name = 'zabbixapi'
-  spec.summary = 'Ruby module for work with zabbix api.'
-
-  spec.email = 'verm666@gmail.com'
-  spec.author = 'Eduard Snesarev'
-  spec.homepage = 'http://github.com/verm666/RubyZabbixApi'
-  spec.description = 'Ruby module for work with zabbix api. '
-
-  spec.has_rdoc = true
-  spec.extra_rdoc_files  = 'README.rdoc'
-
-  spec.files = FileList["lib/*.rb", "lib/zabbixapi/*.rb", "bin/*", "spec/*", 'zabbixapi.gemspec', 'README.rdoc', "examples/*"].to_a
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.require_paths = ["lib"]
 end
