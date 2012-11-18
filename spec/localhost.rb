@@ -9,7 +9,7 @@ zbx = ZabbixApi.connect(
   :url => api_url,
   :user => api_login,
   :password => api_password,
-  :debug => false
+  :debug => true
 )
 
 hostgroup = "hostgroup"
@@ -128,6 +128,12 @@ describe ZabbixApi, "test_api" do
     )
   end
 
+  it "HOST: Get template ids" do
+    zbx.host.get_templates(
+
+    )
+  end
+
   it "TRIGGER: Create" do
     zbx.trigger.create(
       :description => trigger,
@@ -174,10 +180,10 @@ describe ZabbixApi, "test_api" do
 
   it "USER: Create" do
     zbx.user.create(
-      :alias => "Test user",
+      :alias => "Test #{user}",
       :name => user,
-      :surname => "surname",
-      :passwd => "passwd"
+      :surname => user,
+      :passwd => user
     ).should be_kind_of(Integer)
   end
 
