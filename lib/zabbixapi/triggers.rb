@@ -1,5 +1,5 @@
 class ZabbixApi
-  class Trigger
+  class Triggers
 
     def initialize(options = {})
       @client = Client.new(options)

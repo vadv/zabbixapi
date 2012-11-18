@@ -1,25 +1,25 @@
 require "zabbixapi/version"
 require "zabbixapi/client"
 require "zabbixapi/server"
-require "zabbixapi/application"
-require "zabbixapi/template"
-require "zabbixapi/hostgroup"
-require "zabbixapi/user"
-require "zabbixapi/host"
-require "zabbixapi/trigger"
-require "zabbixapi/item"
+require "zabbixapi/applications"
+require "zabbixapi/templates"
+require "zabbixapi/hostgroups"
+require "zabbixapi/users"
+require "zabbixapi/hosts"
+require "zabbixapi/triggers"
+require "zabbixapi/items"
 
 class ZabbixApi
 
   attr :client
   attr :server
-  attr :user
-  attr :item
-  attr :application
-  attr :template
-  attr :hostgroup
-  attr :host
-  attr :trigger
+  attr :users
+  attr :items
+  attr :applications
+  attr :templates
+  attr :hostgroups
+  attr :hosts
+  attr :triggers
 
   def self.connect(options = {})
     new(options)
@@ -32,13 +32,13 @@ class ZabbixApi
   def initialize(options = {})
     @client = Client.new(options)
     @server = Server.new(options)
-    @user   = User.new(options)
-    @item   = Item.new(options)
-    @host   = Host.new(options)
-    @application = Application.new(options)
-    @template    = Template.new(options)
-    @hostgroup   = HostGroup.new(options)
-    @trigger = Trigger.new(options)
+    @users   = Users.new(options)
+    @items   = Items.new(options)
+    @hosts   = Hosts.new(options)
+    @applications = Applications.new(options)
+    @templates    = Templates.new(options)
+    @hostgroups   = HostGroups.new(options)
+    @triggers = Triggers.new(options)
   end
 
 end

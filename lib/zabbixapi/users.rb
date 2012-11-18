@@ -1,5 +1,5 @@
 class ZabbixApi
-  class User
+  class Users
 
     def initialize(options = {})
       @client = Client.new(options)

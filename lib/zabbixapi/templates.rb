@@ -1,5 +1,5 @@
 class ZabbixApi
-  class Template
+  class Templates
 
     def initialize(options = {})
       @client = Client.new(options)
@@ -22,6 +22,24 @@ class ZabbixApi
 
     def destroy(data)
       delete(data)
+    end
+
+    def get_by_host(data)
+      a= @client.api_request(
+        :method => "template.get", 
+        :params => {
+          :filter => data, 
+          :output => "extend"
+        })
+      puts "#{a}"
+    end
+
+    def all
+      result = {}
+      @client.api_request(:method => "template.get", :params => {:output => "extend"}).each do |tmpl|
+        result[tmpl['host']] = tmpl['hostid']
+      end
+      result
     end
 
     def get_full_data(data)

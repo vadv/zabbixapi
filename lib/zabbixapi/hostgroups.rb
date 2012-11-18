@@ -1,5 +1,5 @@
 class ZabbixApi
-  class HostGroup
+  class HostGroups
 
     def initialize(options = {})
       @client = Client.new(options)

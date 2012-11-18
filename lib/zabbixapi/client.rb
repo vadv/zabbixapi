@@ -8,6 +8,10 @@ class ZabbixApi
       Random.rand(100000)
     end
 
+    def api_version
+      @version ||= api_request(:method => "apiinfo.version", :params => {})
+    end
+
     def auth
       api_request(
         :method => 'user.login', 
