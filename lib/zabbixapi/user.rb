@@ -15,7 +15,7 @@ class ZabbixApi
       create(data)
     end
 
-    def delete_by_id(data)
+    def delete(data)
       result = @client.api_request(:method => "user.delete", :params => [:userid => data])
       result ? result['userids'][0].to_i : nil
     end

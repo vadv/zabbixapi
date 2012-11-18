@@ -5,40 +5,38 @@ class ZabbixApi
       @client = Client.new(options)
       @options = options
       @item_default_options = {
-        'description' => nil,
-        'key_' => nil,
-#        'hostid' => nil,
-#        'delay' => 60,
-#        'history' => 60,
-#        'status' => 0,
-#        'type' => 7,
-#        'snmp_community' => '',
-#        'snmp_oid' => '',
-#        'value_type' => 3,
-#        'data_type' => 0,
-#        'trapper_hosts' => 'localhost',
-#        'snmp_port' => 161,
-#        'units' => '',
-#        'multiplier' => 0,
-#        'delta' => 0,
-#        'snmpv3_securityname' => '',
-#        'snmpv3_securitylevel' => 0,
-#        'snmpv3_authpassphrase' => '',
-#        'snmpv3_privpassphrase' => '',
-#        'formula' => 0,
-#        'trends' => 365,
-#        'logtimefmt' => '',
-#        'valuemapid' => 0,
-#        'delay_flex' => '',
-#        'authtype' => 0,
-#        'username' => '',
-#        'password' => '',
-#        'publickey' => '',
-#        'privatekey' => '',
-#        'params' => '',
-#        'ipmi_sensor' => '',
-        'applications' => '',
-#        'templateid' => 0
+        :description => nil,
+        :key_ => nil,
+        :hostid => nil,
+        :delay => 60,
+        :history => 60,
+        :status => 0,
+        :type => 7,
+        :snmp_community => '',
+        :snmp_oid => '',
+        :value_type => 3,
+        :data_type => 0,
+        :trapper_hosts => 'localhost',
+        :snmp_port => 161,
+        :units => '',
+        :multiplier => 0,
+        :delta => 0,
+        :snmpv3_securityname => '',
+        :snmpv3_securitylevel => 0,
+        :snmpv3_authpassphrase => '',
+        :snmpv3_privpassphrase => '',
+        :formula => 0,
+        :trends => 365,
+        :logtimefmt => '',
+        :valuemapid => 0,
+        :delay_flex => '',
+        :authtype => 0,
+        :username => '',
+        :password => '',
+        :publickey => '',
+        :privatekey => '',
+        :params => '',
+        :ipmi_sensor => ''
       }
     end
 
@@ -48,7 +46,7 @@ class ZabbixApi
     end
 
     def create(data)
-      result = @client.api_request(:method => "item.create", :params => merge_params(data))
+      result = @client.api_request(:method => "item.create", :params => [merge_params(data)] )
       result.empty? ? nil : result['itemids'][0].to_i
     end
 
@@ -67,7 +65,7 @@ class ZabbixApi
 
     def update(data)
       result = @client.api_request(:method => "item.update", :params => data)
-      result.empty? ? nil : result['itemid'][0].to_i
+      result.empty? ? nil : result['itemids'][0].to_i
     end
 
     def delete(data)

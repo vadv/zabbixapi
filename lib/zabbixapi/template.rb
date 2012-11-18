@@ -16,7 +16,7 @@ class ZabbixApi
     end
 
     def delete(data)
-      result = @client.api_request(:method => "template.delete", :params => [data])
+      result = @client.api_request(:method => "template.delete", :params => [:templateid => data])
       result.empty? ? nil : result['templateids'][0].to_i
     end
 
