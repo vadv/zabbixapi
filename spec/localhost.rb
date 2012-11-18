@@ -1,14 +1,14 @@
 require 'zabbixapi'
 
 # settings
-@api_url = 'http://localhost/zabbix/api_jsonrpc.php'
-@api_login = 'Admin'
-@api_password = 'zabbix'
+api_url = 'http://localhost/api_jsonrpc.php'
+api_login = 'Admin'
+api_password = 'zabbix'
 
 zbx = ZabbixApi.connect(
-  :url => @api_url,
-  :user => @api_login,
-  :password => @api_password,
+  :url => api_url,
+  :user => api_login,
+  :password => api_password,
   :debug => false
 )
 
