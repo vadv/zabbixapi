@@ -20,6 +20,7 @@ host = "hostname"
 trigger = "trigger"
 user = "user"
 user2 = "user2"
+graph = "graph"
 
 describe ZabbixApi, "test_api" do
 
@@ -28,108 +29,129 @@ describe ZabbixApi, "test_api" do
   end
 
   it "HOSTGROUP: Create" do
-    zbx.hostgroup.create(:name => hostgroup).should be_kind_of(Integer)
+    zbx.hostgroups.create(:name => hostgroup).should be_kind_of(Integer)
   end
 
   it "HOSTGROUP: Find" do
-    zbx.hostgroup.get_id(:name => [hostgroup]).should be_kind_of(Integer)
+    zbx.hostgroups.get_id(:name => [hostgroup]).should be_kind_of(Integer)
   end
 
   it "HOSTGROUP: Find unknown" do
-    zbx.hostgroup.get_id(:name => ["#{hostgroup}______"]).should be_kind_of(NilClass)
+    zbx.hostgroups.get_id(:name => ["#{hostgroup}______"]).should be_kind_of(NilClass)
   end
 
   it "TEMPLATE: Create" do
-    zbx.template.create(
+    zbx.templates.create(
       :host => template,
-      :groups => [:groupid => zbx.hostgroup.get_id(:name => [hostgroup])]
+      :groups => [:groupid => zbx.hostgroups.get_id(:name => [hostgroup])]
     ).should be_kind_of(Integer)
   end
 
   it "TEMPLATE: Check full data" do
-    zbx.template.get_full_data(:host => template)[0]['host'].should be_kind_of(String)
+    zbx.templates.get_full_data(:host => template)[0]['host'].should be_kind_of(String)
   end
 
   it "TEMPLATE: Find" do
-    zbx.template.get_id(:host => template).should be_kind_of(Integer)
+    zbx.templates.get_id(:host => template).should be_kind_of(Integer)
   end
 
   it "TEMPLATE: Find unknown" do
-    zbx.template.get_id(:host => "#{template}_____").should be_kind_of(NilClass)
+    zbx.templates.get_id(:host => "#{template}_____").should be_kind_of(NilClass)
   end
 
   it "APPLICATION: Create" do
-    zbx.application.create(
+    zbx.applications.create(
       :name => application,
-      :hostid => zbx.template.get_id(:host => template)
+      :hostid => zbx.templates.get_id(:host => template)
     )
   end
 
   it "APPLICATION: Full info check" do
-    zbx.application.get_full_data(:name => application)[0]['applicationid'].should be_kind_of(String)
+    zbx.applications.get_full_data(:name => application)[0]['applicationid'].should be_kind_of(String)
   end
 
   it "APPLICATION: Find" do
-    zbx.application.get_id(:name => application).should be_kind_of(Integer)
+    zbx.applications.get_id(:name => application).should be_kind_of(Integer)
   end
 
   it "APPLICATION: Find unknown" do
-    zbx.application.get_id(:name => "#{application}___").should be_kind_of(NilClass)
+    zbx.applications.get_id(:name => "#{application}___").should be_kind_of(NilClass)
   end
 
   it "ITEM: Create" do
-    zbx.item.create(
+    zbx.items.create(
       :description => item,
       :key_ => "proc.num[aaa]",
-      :hostid => zbx.template.get_id(:host => template),
-      :applications => [zbx.application.get_id(:name => application)]
+      :hostid => zbx.templates.get_id(:host => template),
+      :applications => [zbx.applications.get_id(:name => application)]
     )
   end
 
   it "ITEM: Full info check" do
-    zbx.item.get_full_data(:description => item)[0]['itemid'].should be_kind_of(String)
+    zbx.items.get_full_data(:description => item)[0]['itemid'].should be_kind_of(String)
   end
 
   it "ITEM: Find" do
-    zbx.item.get_id(:description => item).should be_kind_of(Integer)
+    zbx.items.get_id(:description => item).should be_kind_of(Integer)
   end
 
   it "ITEM: Update" do
-    zbx.item.update(
-      :itemid => zbx.item.get_id(:description => item),
+    zbx.items.update(
+      :itemid => zbx.items.get_id(:description => item),
       :status => 0
     ).should be_kind_of(Integer)
   end
 
   it "ITEM: Get unknown" do
-    zbx.item.get_id(:description => "#{item}_____")
+    zbx.items.get_id(:description => "#{item}_____")
   end
 
   it "HOST: Create" do
-    zbx.host.create(
+    zbx.hosts.create(
       :host => host,
       :ip => "10.20.48.88",
-      :groups => [:groupid => zbx.hostgroup.get_id(:name => [hostgroup])]
+      :groups => [:groupid => zbx.hostgroups.get_id(:name => [hostgroup])]
     ).should be_kind_of(Integer)
   end
 
   it "HOST: Find unknown" do
-    zbx.host.get_id(:host => "#{host}___").should be_kind_of(NilClass)
+    zbx.hosts.get_id(:host => "#{host}___").should be_kind_of(NilClass)
   end
 
   it "HOST: Find" do
-    zbx.host.get_id(:host => host).should be_kind_of(Integer)
+    zbx.hosts.get_id(:host => host).should be_kind_of(Integer)
   end
 
   it "HOST: Update" do
-    zbx.host.update(
-      :hostid => zbx.host.get_id(:host => host),
+    zbx.hosts.update(
+      :hostid => zbx.hosts.get_id(:host => host),
       :status => 0
     )
   end
 
+  it "TEMPLATE: Get all templates linked with host" do
+    zbx.templates.get_ids_by_host(
+      :hostids => [zbx.hosts.get_id(:host => host)]
+    ).should be_kind_of(Array)
+  end
+
+  it "HOSTS: Linked host with templates" do
+    zbx.hosts.unlink_templates(
+      :hosts_id => [zbx.hosts.get_id(:host => host)],
+      :templates_id => [zbx.templates.get_id(:host => template)]
+    ).should be_kind_of(TrueClass)
+  end
+
+  it "TEMPLATE: Unlink host from templates" do
+
+  end
+
+  it "TEMPLATE: Get all" do 
+    zbx.templates.all.should be_kind_of(Hash)
+  end
+
   it "TRIGGER: Create" do
-    zbx.trigger.create(
+    zbx.triggers.create(
       :description => trigger,
       :expression => "{#{template}:proc.num[aaa].last(0)}<1",
       :comments => "Bla-bla is faulty (disaster)",
@@ -141,60 +163,89 @@ describe ZabbixApi, "test_api" do
   end
 
   it "TRIGGER: Find" do
-    zbx.trigger.get_id(:description => [trigger]).should be_kind_of(Integer)
+    zbx.triggers.get_id(:description => [trigger]).should be_kind_of(Integer)
+  end
+
+  it "GRAPH: Create" do 
+    gitems = {
+        :itemid => zbx.items.get_id(:description => item), 
+        :calc_fnc => "2",
+        :type => "0",
+        :periods_cnt => "5"
+    }
+    zbx.graphs.create(
+      :gitems => [gitems],
+      :show_triggers => "0",
+      :name => graph,
+      :width => "900",
+      :height => "200"
+    ).should be_kind_of(Integer)
+    #
+  end
+
+  it "GRAPH: Find" do
+    zbx.graphs.get_id(graph).should be_kind_of(Integer)
+  end
+
+  it "GRAPH: Update" do
+    zbx.graphs.update(:graphid => zbx.graphs.get_id(graph), :ymax_type => 1).should be_kind_of(Integer)
+  end
+
+  it "GRAPH: Delete" do
+    zbx.graphs.delete(zbx.graphs.get_id(graph)).should be_kind_of(Integer)
   end
 
   it "TRIGGER: Delete" do
-    zbx.trigger.delete( zbx.trigger.get_id(:description => trigger) ).should be_kind_of(Integer)
+    zbx.triggers.delete( zbx.triggers.get_id(:description => trigger) ).should be_kind_of(Integer)
   end
 
   it "HOST: Delete" do
-    zbx.host.delete( zbx.host.get_id(:host => host) ).should be_kind_of(Integer)
+    zbx.hosts.delete( zbx.hosts.get_id(:host => host) ).should be_kind_of(Integer)
   end
 
   it "ITEM: Delete" do
-    zbx.item.delete(
-      zbx.item.get_id(:description => item)
+    zbx.items.delete(
+      zbx.items.get_id(:description => item)
     ).should be_kind_of(Integer)
   end
 
   it "APPLICATION: Delete" do
-    zbx.application.delete( zbx.application.get_id(:name => application) )
+    zbx.applications.delete( zbx.applications.get_id(:name => application) )
   end
 
   it "TEMPLATE: Delete" do
-    zbx.template.delete(zbx.template.get_id(:host => template))
+    zbx.templates.delete(zbx.templates.get_id(:host => template))
   end
 
   it "HOSTGROUP: Delete" do
-    zbx.hostgroup.delete(
-      zbx.hostgroup.get_id(:name => [hostgroup])
+    zbx.hostgroups.delete(
+      zbx.hostgroups.get_id(:name => [hostgroup])
     ).should be_kind_of(Integer)
   end
 
   it "USER: Create" do
-    zbx.user.create(
-      :alias => "Test user",
+    zbx.users.create(
+      :alias => "Test #{user}",
       :name => user,
-      :surname => "surname",
-      :passwd => "passwd"
+      :surname => user,
+      :passwd => user
     ).should be_kind_of(Integer)
   end
 
   it "USER: Find" do
-    zbx.user.get_full_data(:name => user)[0]['name'].should be_kind_of(String)
+    zbx.users.get_full_data(:name => user)[0]['name'].should be_kind_of(String)
   end
 
   it "USER: Update" do
-    zbx.user.update(:userid => zbx.user.get_id(:name => user), :name => user2).should be_kind_of(Integer)
+    zbx.users.update(:userid => zbx.users.get_id(:name => user), :name => user2).should be_kind_of(Integer)
   end
 
   it "USER: Find unknown" do
-    zbx.user.get_id(:name => "#{user}_____")
+    zbx.users.get_id(:name => "#{user}_____")
   end
 
   it "USER: Delete" do
-    zbx.user.delete(zbx.user.get_id(:name => user2)).should be_kind_of(Integer)
+    zbx.users.delete(zbx.users.get_id(:name => user2)).should be_kind_of(Integer)
   end
 
 end

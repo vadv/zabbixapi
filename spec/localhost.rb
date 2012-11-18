@@ -20,6 +20,7 @@ host = "hostname"
 trigger = "trigger"
 user = "user"
 user2 = "user2"
+graph = "graph"
 
 describe ZabbixApi, "test_api" do
 
@@ -128,10 +129,21 @@ describe ZabbixApi, "test_api" do
     )
   end
 
-  it "HOST: Get all templates linked with host" do
-    zbx.templates.get_by_host(
-      "host" => host
-    )
+  it "TEMPLATE: Get all templates linked with host" do
+    zbx.templates.get_ids_by_host(
+      :hostids => [zbx.hosts.get_id(:host => host)]
+    ).should be_kind_of(Array)
+  end
+
+  it "HOSTS: Linked host with templates" do
+    zbx.hosts.unlink_templates(
+      :hosts_id => [zbx.hosts.get_id(:host => host)],
+      :templates_id => [zbx.templates.get_id(:host => template)]
+    ).should be_kind_of(TrueClass)
+  end
+
+  it "TEMPLATE: Unlink host from templates" do
+
   end
 
   it "TEMPLATE: Get all" do 
@@ -152,6 +164,35 @@ describe ZabbixApi, "test_api" do
 
   it "TRIGGER: Find" do
     zbx.triggers.get_id(:description => [trigger]).should be_kind_of(Integer)
+  end
+
+  it "GRAPH: Create" do 
+    gitems = {
+        :itemid => zbx.items.get_id(:description => item), 
+        :calc_fnc => "2",
+        :type => "0",
+        :periods_cnt => "5"
+    }
+    zbx.graphs.create(
+      :gitems => [gitems],
+      :show_triggers => "0",
+      :name => graph,
+      :width => "900",
+      :height => "200"
+    ).should be_kind_of(Integer)
+    #
+  end
+
+  it "GRAPH: Find" do
+    zbx.graphs.get_id(graph).should be_kind_of(Integer)
+  end
+
+  it "GRAPH: Update" do
+    zbx.graphs.update(:graphid => zbx.graphs.get_id(graph), :ymax_type => 1).should be_kind_of(Integer)
+  end
+
+  it "GRAPH: Delete" do
+    zbx.graphs.delete(zbx.graphs.get_id(graph)).should be_kind_of(Integer)
   end
 
   it "TRIGGER: Delete" do

@@ -8,6 +8,7 @@ require "zabbixapi/users"
 require "zabbixapi/hosts"
 require "zabbixapi/triggers"
 require "zabbixapi/items"
+require "zabbixapi/graphs"
 
 class ZabbixApi
 
@@ -20,6 +21,7 @@ class ZabbixApi
   attr :hostgroups
   attr :hosts
   attr :triggers
+  attr :graphs
 
   def self.connect(options = {})
     new(options)
@@ -39,6 +41,7 @@ class ZabbixApi
     @templates    = Templates.new(options)
     @hostgroups   = HostGroups.new(options)
     @triggers = Triggers.new(options)
+    @graphs = Graphs.new(options)
   end
 
 end

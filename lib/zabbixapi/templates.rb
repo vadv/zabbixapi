@@ -24,14 +24,23 @@ class ZabbixApi
       delete(data)
     end
 
-    def get_by_host(data)
-      a= @client.api_request(
-        :method => "template.get", 
+    def get_ids_by_host(data)
+      result = []
+      @client.api_request(:method => "template.get", :params => data).each do |tmpl|
+        result << tmpl['templateid']
+      end
+      result
+    end
+
+    def link_with_host(data)
+      result = @client.api_request(
+        :method => "template.massAdd", 
         :params => {
-          :filter => data, 
-          :output => "extend"
-        })
-      puts "#{a}"
+          :hosts => data[:hosts_id].map { |t| {"hostid" => t} },
+          :templates => data[:templates_id].map { |t| {"templateid" => t} }
+        }
+      )
+      result.empty? ? false : true
     end
 
     def all

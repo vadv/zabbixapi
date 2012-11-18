@@ -37,6 +37,17 @@ class ZabbixApi
       create(data)
     end
 
+    def unlink_templates(data)
+      result = @client.api_request(
+        :method => "host.massRemove", 
+        :params => {
+          :hostids => data[:hosts_id],
+          :templates => data[:templates_id]
+        }
+      )
+      result.empty? ? false : true
+    end
+
     def delete(data)
       result = @client.api_request(:method => "host.delete", :params => [:hostid => data])
       result.empty? ? nil : result['hostids'][0].to_i
