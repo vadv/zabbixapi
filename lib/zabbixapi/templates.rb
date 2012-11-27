@@ -1,43 +1,24 @@
 class ZabbixApi
-  class Templates
+  class Templates < Basic
 
-    def initialize(options = {})
-      @client = Client.new(options)
-      @options = options
+    def initialize(client)
+      @client = client
     end
 
-    # Create template
-    #
-    # * *Args*    :
-    #   - +data+ -> Hash with :host => "Template_Name" and :groups => array with hostgroup ids
-    # * *Returns* :
-    #   - Nil or Integer
-    def create(data)
-      result = @client.api_request(:method => "template.create", :params => [data])
-      result.empty? ? nil : result['templateids'][0].to_i
+    def api_method_name
+      "template"
     end
 
-    # Add template
-    # Synonym create
-    def add(data)
-      create(data)
+    def api_ids_keys
+      "templateids"
     end
 
-    # Delete template
-    #
-    # * *Args*    :
-    #   - +data+ -> Hash with :host => "Template_Name"
-    # * *Returns* :
-    #   - Nil or Integer
-    def delete(data)
-      result = @client.api_request(:method => "template.delete", :params => [:templateid => data])
-      result.empty? ? nil : result['templateids'][0].to_i
+    def api_id_key_sym
+      :templateid
     end
 
-    # Destroy template
-    # Synonym delete
-    def destroy(data)
-      delete(data)
+    def api_id_key
+      "templateid"
     end
 
     # Return templateids linked with host 
@@ -52,20 +33,7 @@ class ZabbixApi
         result << tmpl['templateid']
       end
       result
-    end
-
-    # Return templateid
-    # 
-    # * *Args*    :
-    #   - +data+ -> Hash with :host => "Template_Name" and :groups => array with hostgroup ids
-    # * *Returns* :
-    #   - Integer
-    def get_or_create(data)
-      unless templateid = get_id(:host => data[:host])
-        templateid = create(data)
-      end
-      templateid
-    end   
+    end 
 
     # Analog Zabbix api call massUpdate
     # 
@@ -137,35 +105,6 @@ class ZabbixApi
           end
       end
       result
-    end
-
-    # Return info about template
-    # 
-    # * *Args*    : 
-    #   - +data+ -> Hash with :host => "Template name"
-    # * *Returns* :
-    #   - Hash with template info
-    def get_full_data(data)
-      case @client.api_version
-        when "1.2"
-          # in this version returned id=>{...}
-          result = @client.api_request(:method => "template.get", :params => {:filter => data, :output => "extend"})
-          result.empty? ? [] : result.values 
-        else
-          @client.api_request(:method => "template.get", :params => {:filter => data, :output => "extend"})
-      end
-    end
-
-    # Return info about template
-    # 
-    # * *Args*    : 
-    #   - +data+ -> Hash with :host => "Template name"
-    # * *Returns* :
-    #   - Nil or Integer
-    def get_id(data)
-      templateid = nil
-      get_full_data(data).each { |template| templateid = template['templateid'].to_i if template['host'] == data[:host] }
-      templateid
     end
 
   end

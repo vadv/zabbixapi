@@ -1,18 +1,24 @@
 class ZabbixApi
-  class Graphs
+  class Graphs < Basic
 
-    def initialize(options = {})
-      @client = Client.new(options)
-      @options = options
+    def initialize(client)
+      @client = client
     end
 
-    def create(data)
-      result = @client.api_request(:method => "graph.create", :params => [data])
-      result.empty? ? nil : result['graphids'][0].to_i
+    def api_method_name
+      "graph"
     end
 
-    def add(data)
-      create(data)
+    def api_ids_keys
+      "graphids"
+    end
+
+    def api_id_key_sym
+      :graphid
+    end
+
+    def api_id_key
+      "graphid"
     end
 
     def delete(data)
@@ -23,14 +29,6 @@ class ZabbixApi
         else
           result.empty? ? nil : result['graphids'][0].to_i
       end
-    end
-
-    def destroy(data)
-      delete(data)
-    end
-
-    def get_full_data(data)
-      @client.api_request(:method => "graph.get", :params => {:search => {:name => data}, :output => "extend"})
     end
 
     def get_ids_by_host(data)
@@ -46,13 +44,6 @@ class ZabbixApi
       @client.api_request(:method => "graphitem.get", :params => { :graphids => [data], :output => "extend" } )
     end
 
-    def get_id(data)
-      result = @client.api_request(:method => "graph.get", :params => {:filter => {:name=> data[:name]}, :output => "extend"})
-      graphid = nil
-      result.each { |graph| graphid = graph['graphid'].to_i if graph['name'] == data[:name] }
-      graphid
-    end
-
     def create_or_update(data)
       graphid = get_id(:name => data[:name], :templateid => data[:templateid])
       graphid ? _update(data.merge(:graphid => graphid)) : create(data)
@@ -61,13 +52,6 @@ class ZabbixApi
     def _update(data)
       data.delete(:name)
       update(data)
-    end
-
-    def get_or_create(data)
-      unless graphid = get_id(:name => data[:name], :templateid => data[:templateid])
-        graphid = create(data)
-      end
-      graphid
     end
 
     def update(data)

@@ -20,9 +20,8 @@ class ZabbixApi
     #SCREEN_RESOURCE_SYSTEM_STATUS => 15,
     #SCREEN_RESOURCE_HOST_TRIGGERS => 16
 
-    def initialize(options = {})
-      @client = Client.new(options)
-      @options = options
+    def initialize(client)
+      @client = client
       @screeb_default_options = {
         :vsize => 3
       }

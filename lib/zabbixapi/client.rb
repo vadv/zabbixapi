@@ -1,11 +1,15 @@
 require 'json'
 require 'net/http'
+require 'pry'
 
 class ZabbixApi
   class Client
 
+    attr :request_id
+    attr :options
+
     def id
-      Random.rand(100000)
+      @request_id += 1
     end
 
     def api_version
@@ -24,13 +28,14 @@ class ZabbixApi
 
     def initialize(options = {})
       @options = options
-      @auth_hash = auth
+      @request_id = 1
       unless ENV['http_proxy'].nil?
         @proxy_uri = URI.parse(ENV['http_proxy'])
         @proxy_host = @proxy_uri.host
         @proxy_port = @proxy_uri.port
         @proxy_user, @proxy_pass = @proxy_uri.userinfo.split(/:/) if @proxy_uri.userinfo
       end
+      @auth_hash = auth
     end
 
     def message_json(body)
