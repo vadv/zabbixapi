@@ -1,7 +1,0 @@
-.rvmrc
-*.gem
-*.swp
-.idea
-.gemtags
-pkg
-test
